@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Двухфакторная аутентификация - WishLister{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card card-hover border-0 shadow-lg">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="avatar-lg bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-shield-lock text-warning fs-2"></i>
+                    </div>
+                    <h2>Двухфакторная аутентификация</h2>
+                    <p class="text-muted">Дополнительная защита вашего аккаунта</p>
+                </div>
+                
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Для демонстрации используйте код <strong>123456</strong>
+                </div>
+                
+                <form method="POST" action="{{ url_for('enable_otp') }}">
+                    <div class="mb-4">
+                        <label for="otp_code" class="form-label">Введите OTP код</label>
+                        <input type="text" class="form-control form-control-lg text-center" 
+                               id="otp_code" name="otp_code" maxlength="6" 
+                               placeholder="000000" required>
+                        <small class="text-muted">6-значный код из приложения аутентификатора</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-shield-check me-2"></i>Включить 2FA
+                        </button>
+                        <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">
+                            Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Создать вишлист - Wishlist App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Создать новый вишлист</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('create_wishlist') }}">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Название вишлиста *</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Описание</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_public" name="is_public">
+                            <label class="form-check-label" for="is_public">
+                                Сделать публичным (виден всем друзьям)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    {% if friends %}
+                    <div class="mb-3">
+                        <label class="form-label">Поделиться с выбранными друзьями:</label>
+                        <div class="border rounded p-3">
+                            {% for friend in friends %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" 
+                                       id="friend_{{ friend.id }}" 
+                                       name="share_with[]" 
+                                       value="{{ friend.id }}">
+                                <label class="form-check-label" for="friend_{{ friend.id }}">
+                                    {{ friend.username }} ({{ friend.email }})
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <small class="text-muted">Выбранные друзья смогут видеть вишлист даже если он не публичный</small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Создать вишлист
+                        </button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

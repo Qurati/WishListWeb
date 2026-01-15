@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать вишлист - WishLister{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Редактировать вишлист</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('edit_wishlist', id=wishlist.id) }}">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Название вишлиста *</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               value="{{ wishlist.title }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Описание</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ wishlist.description or '' }}</textarea>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="color" class="form-label">Цвет</label>
+                            <select class="form-select" id="color" name="color">
+                                {% for color_code, color_name in colors %}
+                                <option value="{{ color_code }}" {% if color_code == wishlist.color %}selected{% endif %}>
+                                    {{ color_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="icon" class="form-label">Иконка</label>
+                            <select class="form-select" id="icon" name="icon">
+                                {% for icon_code, icon_name in icons %}
+                                <option value="{{ icon_code }}" {% if icon_code == wishlist.icon %}selected{% endif %}>
+                                    {{ icon_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_public" name="is_public" 
+                                   {% if wishlist.is_public %}checked{% endif %}>
+                            <label class="form-check-label" for="is_public">
+                                Сделать публичным (виден всем друзьям)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Сохранить изменения
+                        </button>
+                        <a href="{{ url_for('view_wishlist', id=wishlist.id) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

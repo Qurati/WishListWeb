@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block title %}{{ wishlist.title }} - WishLister{% endblock %}
+
+{% block styles %}
+<style>
+/* Дополнительные стили для вишлиста */
+.item-row {
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.item-row:hover {
+    border-left-color: var(--primary);
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.item-row.purchased {
+    opacity: 0.7;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.price-badge {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.share-section {
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius);
+}
+
+/* Фикс для кнопок в таблице */
+.table-actions {
+    white-space: nowrap;
+}
+
+/* Фикс для длинных ссылок */
+.link-truncate {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .link-truncate {
+        max-width: 150px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="d-flex align-items-center mb-3">
+            <div class="me-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width: 60px; height: 60px; background: {{ wishlist.color }};">
+                    <i class="bi {{ wishlist.icon }} text-white fs-3"></i>
+                </div>
+            </div>
+            <div>
+                <h1 class="mb-1">{{ wishlist.title }}</h1>
+                {% if wishlist.description %}
+                <p class="text-muted mb-0">{{ wishlist.description }}</p>
+                {% endif %}
+                <div class="mt-2">
+                    <span class="badge {% if wishlist.is_public %}bg-success{% else %}bg-secondary{% endif %}">
+                        {% if wishlist.is_public %}Публичный{% else %}Приватный{% endif %}
+                    </span>
+                    <small class="text-muted ms-2">
+                        <i class="bi bi-calendar me-1"></i>{{ wishlist.created_at.strftime('%d.%m.%Y') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="d-flex justify-content-end gap-2">
+            {% if is_owner %}
+            <a href="{{ url_for('edit_wishlist', id=wishlist.id) }}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil me-1"></i>Редактировать
+            </a>
+            {% endif %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Назад
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Форма добавления предмета -->
+{% if is_owner %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Добавить предмет</h5>
+        <form method="POST" action="{{ url_for('add_wishlist_item', id=wishlist.id) }}" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="name"
+                       placeholder="Название предмета *" required>
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="description"
+                       placeholder="Описание">
+            </div>
+            <div class="col-md-2">
+                <input type="number" step="0.01" min="0" class="form-control"
+                       name="price" placeholder="Цена (₽)">
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="link"
+                           placeholder="Ссылка (необязательно)">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> Добавить
+                    </button>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-text">* Обязательное поле. Цена указывается в рублях.</div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<!-- Управление доступом (только для владельца) -->
+{% if is_owner and (friends_with_access or friends_without_access) %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">
+            <i class="bi bi-share me-2"></i>Управление доступом
+        </h5>
+
+        {% if friends_with_access %}
+        <div class="mb-4">
+            <h6 class="mb-3">Имеют доступ:</h6>
+            <div class="row g-2">
+                {% for friend in friends_with_access %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="d-flex align-items-center justify-content-between p-2 border rounded">
+                        <div class="d-flex align-items-center">
+                            {% if friend.avatar and friend.avatar != 'default.png' %}
+                            <img src="{{ url_for('uploaded_file', filename=friend.avatar) }}"
+                                 class="avatar-xs-custom rounded-circle me-2">
+                            {% else %}
+                            <div class="avatar-xs-custom rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2">
+                                {{ friend.username[0]|upper }}
+                            </div>
+                            {% endif %}
+                            <div>
+                                <small class="fw-medium">{{ friend.username|truncate(15) }}</small>
+                            </div>
+                        </div>
+                        <form method="POST" action="{{ url_for('remove_wishlist_share', id=wishlist.id) }}"
+                              class="d-inline">
+                            <input type="hidden" name="friend_id" value="{{ friend.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if friends_without_access %}
+        <div>
+            <h6 class="mb-3">Предоставить доступ:</h6>
+            <div class="row g-2">
+                {% for friend in friends_without_access %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="d-flex align-items-center justify-content-between p-2 border rounded">
+                        <div class="d-flex align-items-center">
+                            {% if friend.avatar and friend.avatar != 'default.png' %}
+                            <img src="{{ url_for('uploaded_file', filename=friend.avatar) }}"
+                                 class="avatar-xs-custom rounded-circle me-2">
+                            {% else %}
+                            <div class="avatar-xs-custom rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2">
+                                {{ friend.username[0]|upper }}
+                            </div>
+                            {% endif %}
+                            <div>
+                                <small class="fw-medium">{{ friend.username|truncate(15) }}</small>
+                            </div>
+                        </div>
+                        <form method="POST" action="{{ url_for('share_wishlist', id=wishlist.id) }}"
+                              class="d-inline">
+                            <input type="hidden" name="friend_id" value="{{ friend.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-share"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Список предметов -->
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-box me-2"></i>Предметы
+                <span class="badge bg-primary ms-2">{{ items|length }}</span>
+            </h5>
+            {% if items %}
+            <small class="text-muted">
+                Куплено: {{ items|selectattr('is_purchased')|list|length }} из {{ items|length }}
+            </small>
+            {% endif %}
+        </div>
+
+        {% if items %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th width="5%">#</th>
+                        <th width="25%">Название</th>
+                        <th width="30%">Описание</th>
+                        <th width="15%">Цена</th>
+                        <th width="15%">Статус</th>
+                        <th width="10%" class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr class="item-row {% if item.is_purchased %}purchased{% endif %}">
+                        <td>
+                            <span class="badge bg-light text-dark">{{ loop.index }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ item.name }}</strong>
+                            {% if item.link %}
+                            <div class="mt-1">
+                                <a href="{{ item.link }}" target="_blank" class="small text-decoration-none link-truncate"
+                                   title="{{ item.link }}">
+                                    <i class="bi bi-link me-1"></i>Ссылка
+                                </a>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.description %}
+                            <span class="text-muted">{{ item.description|truncate(50) }}</span>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.price and item.price > 0 %}
+                            <span class="badge price-badge bg-info">
+                                {{ "%.2f"|format(item.price) }} ₽
+                            </span>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.is_purchased %}
+                            <span class="badge bg-success">Куплено</span>
+                            {% else %}
+                            <span class="badge bg-secondary">В списке</span>
+                            {% endif %}
+                        </td>
+                        <td class="table-actions text-end">
+                            {% if is_owner %}
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn {% if item.is_purchased %}btn-outline-secondary{% else %}btn-outline-success{% endif %}"
+                                        onclick="togglePurchased({{ item.id }})"
+                                        title="{% if item.is_purchased %}Отметить как некупленное{% else %}Отметить как купленное{% endif %}">
+                                    <i class="bi {% if item.is_purchased %}bi-cart-x{% else %}bi-cart-check{% endif %}"></i>
+                                </button>
+                                <a href="{{ url_for('edit_wishlist_item', id=item.id) }}" class="btn btn-outline-primary"
+                                   title="Редактировать">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('delete_wishlist_item', id=item.id) }}"
+                                      class="d-inline" onsubmit="return confirm('Удалить предмет?');">
+                                    <button type="submit" class="btn btn-outline-danger" title="Удалить">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
+            <p class="text-muted">В этом вишлисте пока нет предметов</p>
+            {% if is_owner %}
+            <p class="text-muted small mb-4">Добавьте предметы с помощью формы выше</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function togglePurchased(itemId) {
+    fetch(`/item/${itemId}/toggle_purchased`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Ошибка сети');
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при обновлении статуса предмета');
+    });
+}
+</script>
+{% endblock %}

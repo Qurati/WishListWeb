@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Очистка кеша - WishLister{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <h4 class="mb-4">Очистка кеша и сессий</h4>
+                <p class="mb-4">Если у вас есть проблемы с выходом из аккаунта, выполните следующие действия:</p>
+                
+                <div class="alert alert-info mb-4">
+                    <h5>Инструкции:</h5>
+                    <ol class="text-start">
+                        <li>Нажмите кнопку ниже для очистки сессии</li>
+                        <li>Закройте все вкладки браузера с сайтом</li>
+                        <li>Очистите кеш браузера (Ctrl+Shift+Del)</li>
+                        <li>Перезагрузите страницу</li>
+                    </ol>
+                </div>
+                
+                <form method="POST" action="{{ url_for('clear_sessions') }}">
+                    <button type="submit" class="btn btn-danger mb-3">
+                        <i class="bi bi-trash"></i> Очистить все сессии
+                    </button>
+                </form>
+                
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Вернуться на главную
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

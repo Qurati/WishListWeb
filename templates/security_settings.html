@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Настройки безопасности - WishLister{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <h2 class="mb-4">
+            <i class="bi bi-shield-check me-2"></i>Безопасность аккаунта
+        </h2>
+        
+        <div class="card card-hover mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        Двухфакторная аутентификация (2FA)
+                    </h5>
+                    <span class="badge {% if current_user.totp_enabled %}bg-success{% else %}bg-secondary{% endif %}">
+                        {% if current_user.totp_enabled %}Включено{% else %}Выключено{% endif %}
+                    </span>
+                </div>
+
+                {% if not current_user.totp_enabled %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Настройка Google Authenticator</h6>
+                        <ol>
+                            <li>Установите приложение Google Authenticator</li>
+                            <li>Отсканируйте QR-код справа</li>
+                            <li>Введите код из приложения ниже</li>
+                        </ol>
+
+                        <form method="POST" action="{{ url_for('enable_totp') }}">
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Код из приложения</label>
+                                <input type="text" class="form-control" id="code" name="code"
+                                       maxlength="6" placeholder="000000" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Включить 2FA
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        {% if qr_code %}
+                        <img src="{{ qr_code }}" alt="QR Code" class="img-fluid mb-3" style="max-width: 200px;">
+                        <p class="text-muted small">
+                            Или введите ключ вручную: <br>
+                            <code>{{ current_user.totp_secret }}</code>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    2FA включена для вашего аккаунта
+                </div>
+
+                <form method="POST" action="{{ url_for('disable_totp') }}"
+                      onsubmit="return confirm('Вы уверены, что хотите отключить 2FA?')">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="password" class="form-label">Текущий пароль</label>
+                            <input type="password" class="form-control" id="password"
+                                   name="password" required>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-x-circle me-1"></i>Отключить 2FA
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if current_user.totp_enabled %}
+        <div class="card card-hover mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-key me-2"></i>Резервные коды
+                </h5>
+
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Сохраните эти коды в безопасном месте. Каждый код можно использовать один раз.
+                </div>
+
+                {% if backup_codes %}
+                <div class="row">
+                    {% for code in backup_codes %}
+                    <div class="col-md-3 col-sm-4 col-6 mb-2">
+                        <div class="border rounded p-2 text-center font-monospace">
+                            {{ code }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">Нет активных резервных кодов</p>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('regenerate_backup_codes') }}" class="mt-3"
+                      onsubmit="return confirm('Это удалит все старые резервные коды. Продолжить?')">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="password2" class="form-label">Текущий пароль</label>
+                            <input type="password" class="form-control" id="password2"
+                                   name="password" required>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Сгенерировать новые коды
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card card-hover">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-clock-history me-2"></i>Информация об аккаунте
+                </h5>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Параметр</th>
+                                <th>Значение</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Статус верификации</td>
+                                <td>
+                                    {% if current_user.is_verified %}
+                                    <span class="badge bg-success">Подтвержден</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Ожидает</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2FA статус</td>
+                                <td>
+                                    {% if current_user.totp_enabled %}
+                                    <span class="badge bg-success">Включено</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Выключено</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Последний вход</td>
+                                <td>
+                                    {% if current_user.last_login %}
+                                    {{ current_user.last_login.strftime('%d.%m.%Y %H:%M') }}
+                                    {% else %}
+                                    <span class="text-muted">Неизвестно</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Дата регистрации</td>
+                                <td>{{ current_user.created_at.strftime('%d.%m.%Y') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card card-hover mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-lightbulb me-2"></i>Советы по безопасности
+                </h5>
+
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        Всегда используйте 2FA
+                    </div>
+                    <div class="list-group-item border-0 px-0">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        Никому не сообщайте коды
+                    </div>
+                    <div class="list-group-item border-0 px-0">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        Регулярно меняйте пароль
+                    </div>
+                    <div class="list-group-item border-0 px-0">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        Проверяйте историю входов
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-hover">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Статистика безопасности</h5>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
+                        <span>2FA статус</span>
+                        <span class="badge {% if current_user.totp_enabled %}bg-success{% else %}bg-warning{% endif %}">
+                            {% if current_user.totp_enabled %}Защищено{% else %}Уязвимо{% endif %}
+                        </span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
+                        <span>Резервных кодов</span>
+                        <span class="badge bg-info">{{ backup_codes|length }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
+                        <span>Последний вход</span>
+                        <small class="text-muted">
+                            {% if current_user.last_login %}
+                            {{ current_user.last_login.strftime('%d.%m.%Y') }}
+                            {% else %}
+                            Никогда
+                            {% endif %}
+                        </small>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
+                        <span>Верификация email</span>
+                        <span class="badge {% if current_user.is_verified %}bg-success{% else %}bg-warning{% endif %}">
+                            {% if current_user.is_verified %}Да{% else %}Нет{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

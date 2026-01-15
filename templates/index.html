@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Wishlist App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">
+            <i class="bi bi-gift text-primary"></i><br>
+            Добро пожаловать в Wishlist App
+        </h1>
+        <p class="lead mb-4">
+            Создавайте вишлисты, делитесь ими с друзьями и следите за их желаниями!
+        </p>
+        
+        {% if not current_user.is_authenticated %}
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 gap-3">
+                <i class="bi bi-person-plus"></i> Зарегистрироваться
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4">
+                <i class="bi bi-box-arrow-in-right"></i> Войти
+            </a>
+        </div>
+        {% else %}
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-4 gap-3">
+                <i class="bi bi-house"></i> Перейти в Дашборд
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-list-check display-4 text-primary mb-3"></i>
+                <h3>Вишлисты</h3>
+                <p>Создавайте списки желаний на любой случай</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-people display-4 text-primary mb-3"></i>
+                <h3>Друзья</h3>
+                <p>Добавляйте друзей и смотрите их вишлисты</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-share display-4 text-primary mb-3"></i>
+                <h3>Поделиться</h3>
+                <p>Делитесь вишлистами с выбранными друзьями</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+/* Custom styles for WishLister */
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+/* Card hover effects */
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Gradient text */
+.gradient-text {
+    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Avatar styles */
+.avatar {
+    transition: all 0.3s ease;
+}
+
+.avatar:hover {
+    transform: scale(1.1);
+}
+
+.avatar-xs {
+    width: 32px;
+    height: 32px;
+}
+
+.avatar-sm {
+    width: 48px;
+    height: 48px;
+}
+
+.avatar-md {
+    width: 64px;
+    height: 64px;
+}
+
+.avatar-lg {
+    width: 96px;
+    height: 96px;
+}
+
+/* Button styles */
+.btn-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+/* Badge styles */
+.badge-gradient {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+}
+
+/* Form styles */
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+/* Table styles */
+.table-hover tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+    cursor: pointer;
+}
+
+/* Loading spinner */
+.spinner-border-gradient {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
+    mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
+}
+
+/* Progress bar */
+.progress-gradient {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Alert styles */
+.alert-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+/* Custom checkbox */
+.form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+/* Navbar styles */
+.navbar {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Footer styles */
+footer {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .display-5 {
+        font-size: 2rem;
+    }
+
+    .avatar-lg {
+        width: 72px;
+        height: 72px;
+    }
+}

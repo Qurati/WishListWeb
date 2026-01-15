@@ -1,0 +1,25 @@
+*, *::after, *::before {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.main{
+  position: relative;
+}
+.menu{
+display: flex;
+padding: 10px 40px;
+gap: 43%;
+list-style-type: none;
+position: fixed;
+z-index: 1000;
+background-color: rgb(223, 112, 245);
+bottom: 0;
+width: 100%;
+}
+.menu_wish_btn{
+
+}
+.menu_friends_btn{
+
+}

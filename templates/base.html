@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="{% if session.get('dark_mode') %}dark{% else %}light{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}WishLister - Список желаний{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+        }
+
+        /* Темная тема */
+        [data-bs-theme="dark"] {
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --secondary: #a78bfa;
+            --light: #1f2937;
+            --dark: #f9fafb;
+            --gray: #9ca3af;
+            --gray-light: #374151;
+        }
+
+        [data-bs-theme="dark"] body {
+            background: #111827 !important;
+            color: #e5e7eb !important;
+        }
+
+        [data-bs-theme="dark"] .navbar {
+            background: #1f2937 !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-bs-theme="dark"] .card {
+            background: #1f2937 !important;
+            border-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .card-header {
+            background: #1f2937 !important;
+            border-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .card-footer {
+            background: #1f2937 !important;
+            border-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .border-custom {
+            border-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .table {
+            --bs-table-bg: transparent;
+            --bs-table-color: #e5e7eb;
+            --bs-table-border-color: #374151;
+        }
+
+        [data-bs-theme="dark"] .table-hover tbody tr:hover {
+            background-color: rgba(139, 92, 246, 0.1) !important;
+        }
+
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select {
+            background-color: #1f2937 !important;
+            border-color: #4b5563 !important;
+            color: #e5e7eb !important;
+        }
+
+        [data-bs-theme="dark"] .form-control:focus,
+        [data-bs-theme="dark"] .form-select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-primary {
+            color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-primary:hover {
+            background-color: var(--primary) !important;
+            color: white !important;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-secondary {
+            color: var(--gray) !important;
+            border-color: var(--gray) !important;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-secondary:hover {
+            background-color: var(--gray) !important;
+            color: var(--dark) !important;
+        }
+
+        [data-bs-theme="dark"] .text-muted {
+            color: #9ca3af !important;
+        }
+
+        [data-bs-theme="dark"] .border {
+            border-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .bg-light {
+            background-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .bg-light.text-dark {
+            color: #e5e7eb !important;
+        }
+
+        [data-bs-theme="dark"] footer {
+            background: #1f2937 !important;
+            border-top: 1px solid #374151;
+        }
+
+        [data-bs-theme="dark"] .dropdown-menu {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .dropdown-item {
+            color: #e5e7eb !important;
+        }
+
+        [data-bs-theme="dark"] .dropdown-item:hover {
+            background-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .nav-tabs {
+            border-bottom-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .nav-tabs .nav-link {
+            color: #9ca3af !important;
+        }
+
+        [data-bs-theme="dark"] .nav-tabs .nav-link.active {
+            color: var(--primary) !important;
+            background-color: #1f2937 !important;
+            border-color: #374151 #374151 #1f2937 !important;
+        }
+
+        [data-bs-theme="dark"] .alert {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+        }
+
+        [data-bs-theme="dark"] .alert-info {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            border-color: rgba(59, 130, 246, 0.3) !important;
+            color: #93c5fd !important;
+        }
+
+        [data-bs-theme="dark"] .alert-success {
+            background-color: rgba(16, 185, 129, 0.1) !important;
+            border-color: rgba(16, 185, 129, 0.3) !important;
+            color: #6ee7b7 !important;
+        }
+
+        [data-bs-theme="dark"] .alert-warning {
+            background-color: rgba(245, 158, 11, 0.1) !important;
+            border-color: rgba(245, 158, 11, 0.3) !important;
+            color: #fcd34d !important;
+        }
+
+        [data-bs-theme="dark"] .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+            color: #fca5a5 !important;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        [data-bs-theme="dark"] body {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%) !important;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        /* Навигация */
+        .navbar {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 0.8rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            font-size: 2rem;
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: initial;
+            color: var(--primary);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem !important;
+            border-radius: var(--radius-sm);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        /* Аватар */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        [data-bs-theme="dark"] .avatar {
+            border-color: #374151;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+
+        .avatar-lg {
+            width: 120px;
+            height: 120px;
+            border: 5px solid white;
+            box-shadow: var(--shadow);
+        }
+
+        [data-bs-theme="dark"] .avatar-lg {
+            border-color: #374151;
+        }
+
+        .avatar-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Карточки */
+        .card {
+            border: none;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            background: white;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid var(--gray-light);
+            font-weight: 600;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-footer {
+            background: white;
+            border-top: 1px solid var(--gray-light);
+            padding: 1rem 1.5rem;
+        }
+
+        /* Кнопки */
+        .btn {
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            padding: 0.625rem 1.5rem;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, var(--primary-dark), #6b46c1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-lg {
+            padding: 0.875rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Формы */
+        .form-control, .form-select {
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        [data-bs-theme="dark"] .form-label {
+            color: #e5e7eb;
+        }
+
+        /* Вкладки */
+        .nav-tabs {
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--gray);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background: white;
+            border-bottom: 3px solid var(--primary);
+            font-weight: 600;
+        }
+
+        /* Значки */
+        .badge {
+            border-radius: 20px;
+            padding: 0.4em 0.8em;
+            font-weight: 500;
+        }
+
+        /* Алерты */
+        .alert {
+            border-radius: var(--radius-sm);
+            border: none;
+            padding: 1rem 1.25rem;
+        }
+
+        /* Футер */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0;
+            margin-top: auto;
+        }
+
+        /* Иконки вишлистов */
+        .wishlist-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 1rem;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Специальные стили для WishLister */
+        .gradient-text {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        /* Загрузчик */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gray-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Утилиты */
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .text-small {
+            font-size: 0.875rem;
+        }
+
+        /* Отступы */
+        .section-padding {
+            padding: 3rem 0;
+        }
+
+        /* Переключатель темы */
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(30px);
+        }
+
+        .theme-slider i {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+        }
+
+        .theme-slider .bi-sun {
+            left: 8px;
+            color: #f59e0b;
+        }
+
+        .theme-slider .bi-moon {
+            right: 8px;
+            color: #fbbf24;
+        }
+
+        @media (max-width: 768px) {
+            .section-padding {
+                padding: 2rem 0;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+
+            .avatar-lg {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+
+    {% block styles %}{% endblock %}
+</head>
+<body class="d-flex flex-column">
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-heart-fill"></i>
+                WishLister
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                            <i class="bi bi-speedometer2 me-1"></i> Дашборд
+                        </a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <!-- Переключатель темы -->
+                        <label class="theme-switch mb-0">
+                            <input type="checkbox" id="themeToggle" {% if session.get('dark_mode') %}checked{% endif %}>
+                            <span class="theme-slider">
+                                <i class="bi bi-sun"></i>
+                                <i class="bi bi-moon"></i>
+                            </span>
+                        </label>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                            {% if current_user.avatar and current_user.avatar != 'default.png' %}
+                                <img src="{{ url_for('uploaded_file', filename=current_user.avatar) }}" class="avatar me-2" alt="{{ current_user.username }}">
+                            {% else %}
+                                <div class="avatar avatar-placeholder me-2">
+                                    {{ current_user.username[0]|upper }}
+                                </div>
+                            {% endif %}
+                            <span>{{ current_user.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('profile') }}">
+                                    <i class="bi bi-person me-2"></i> Профиль
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('dashboard', tab='wishlists') }}">
+                                    <i class="bi bi-list-check me-2"></i> Мои вишлисты
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('dashboard', tab='friends') }}">
+                                    <i class="bi bi-people me-2"></i> Друзья
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Выйти
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item me-3">
+                        <!-- Переключатель темы -->
+                        <label class="theme-switch mb-0">
+                            <input type="checkbox" id="themeToggle" {% if session.get('dark_mode') %}checked{% endif %}>
+                            <span class="theme-slider">
+                                <i class="bi bi-sun"></i>
+                                <i class="bi bi-moon"></i>
+                            </span>
+                        </label>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Войти</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-primary" href="{{ url_for('register') }}">Регистрация</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="flex-grow-1">
+        <div class="container section-padding">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show fade-in mb-4">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="bi bi-heart-fill me-2"></i>WishLister</h5>
+                    <p class="mb-0 text-light">Создавайте, делитесь и управляйте вашими списками желаний</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 text-light">&copy; 2026 WishLister</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Скрипты -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+        // Улучшение UX
+        $(document).ready(function() {
+            // Автофокус на первом поле формы
+            $('form').find('input[type="text"], input[type="email"], input[type="password"]').first().focus();
+
+            // Плавная прокрутка
+            $('a[href^="#"]').on('click', function(e) {
+                e.preventDefault();
+                const target = $(this.hash);
+                if (target.length) {
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - 80
+                    }, 500);
+                }
+            });
+
+            // Подтверждение удаления
+            $('form[onsubmit*="confirm"]').on('submit', function(e) {
+                if (!confirm('Вы уверены?')) {
+                    e.preventDefault();
+                }
+            });
+
+            // Переключатель темы
+            $('#themeToggle').on('change', function() {
+                const isDarkMode = $(this).is(':checked');
+
+                // Сохраняем настройку в сессии
+                fetch('/toggle-dark-mode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ dark_mode: isDarkMode })
+                });
+
+                // Применяем тему
+                if (isDarkMode) {
+                    document.documentElement.setAttribute('data-bs-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-bs-theme', 'light');
+                }
+            });
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Вход - WishLister{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card card-hover border-0 shadow">
+            <div class="card-body p-4 p-md-5">
+                <h2 class="text-center mb-4">Вход в аккаунт</h2>
+
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Имя пользователя</label>
+                        <input type="text" class="form-control form-control-lg"
+                               id="username" name="username" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control form-control-lg"
+                               id="password" name="password" required>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Войти
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="{{ url_for('forgot_password') }}" class="text-decoration-none">
+                            Забыли пароль?
+                        </a>
+                        <span class="mx-2">|</span>
+                        <a href="{{ url_for('register') }}" class="text-decoration-none">
+                            Регистрация
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

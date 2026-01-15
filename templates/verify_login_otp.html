@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Подтверждение входа - WishLister{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card card-hover border-0 shadow-lg">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="avatar-lg bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-shield-lock text-warning fs-2"></i>
+                    </div>
+                    <h2>Дополнительная проверка</h2>
+                    <p class="text-muted">
+                        Для безопасности вашего аккаунта требуется дополнительная проверка
+                    </p>
+                    
+                    {% if user.prefer_email_otp %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-envelope me-2"></i>
+                        Код отправлен на email: <strong>{{ user.email }}</strong>
+                    </div>
+                    {% elif user.prefer_sms_otp and user.phone %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-phone me-2"></i>
+                        Код отправлен на телефон: <strong>{{ user.phone }}</strong>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <form method="POST" action="{{ url_for('verify_login_otp') }}">
+                    <div class="mb-4">
+                        <label for="otp_code" class="form-label">Код подтверждения</label>
+                        <input type="text" class="form-control form-control-lg text-center" 
+                               id="otp_code" name="otp_code" maxlength="6" 
+                               placeholder="Введите 6 цифр" required autofocus
+                               pattern="\d{6}">
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle me-2"></i>Подтвердить вход
+                        </button>
+                        
+                        <a href="{{ url_for('resend_otp', purpose='login') }}" 
+                           class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Отправить новый код
+                        </a>
+                        
+                        <a href="{{ url_for('verify_2fa_login') }}" class="btn btn-outline-info">
+                            <i class="bi bi-phone me-1"></i>Использовать Google Authenticator
+                        </a>
+                        
+                        <a href="{{ url_for('login') }}" class="btn btn-link text-decoration-none">
+                            <i class="bi bi-arrow-left me-1"></i>Вернуться к входу
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="alert alert-warning mt-3">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>Важно:</strong> Никому не сообщайте этот код. WishLister никогда не запрашивает ваш код по телефону или в социальных сетях.
+        </div>
+    </div>
+</div>
+{% endblock %}

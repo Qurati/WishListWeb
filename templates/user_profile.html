@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль {{ user.username }} - WishLister{% endblock %}
+
+{% block styles %}
+<style>
+/* Дополнительные стили для профиля */
+.profile-card {
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius);
+}
+
+.friend-card {
+    min-height: 80px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+}
+
+.friend-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.friend-avatar {
+    flex-shrink: 0;
+}
+
+.friend-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.friend-info h6,
+.friend-info small {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.friend-actions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.wishlist-item {
+    transition: all 0.2s ease;
+}
+
+.wishlist-item:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.btn-profile {
+    white-space: nowrap;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* Фикс для маленьких экранов */
+@media (max-width: 768px) {
+    .friend-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .friend-actions {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--gray-light);
+    }
+
+    .btn-profile {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Улучшенное отображение вишлистов */
+.wishlist-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Фикс для аватаров */
+.avatar-xs-custom {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row fade-in">
+    <div class="col-lg-4">
+        <!-- Карточка профиля -->
+        <div class="card profile-card mb-4">
+            <div class="card-body text-center">
+                {% if user.avatar and user.avatar != 'default.png' %}
+                    <img src="{{ url_for('uploaded_file', filename=user.avatar) }}"
+                         class="avatar-lg mb-3" alt="{{ user.username }}">
+                {% else %}
+                    <div class="avatar-lg avatar-placeholder mx-auto mb-3 d-flex align-items-center justify-content-center">
+                        <span class="display-4">{{ user.username[0]|upper }}</span>
+                    </div>
+                {% endif %}
+
+                <h4 class="mb-1">{{ user.username }}</h4>
+                <p class="text-muted mb-3">{{ user.email }}</p>
+
+                {% if user.bio %}
+                <p class="text-muted mb-4">{{ user.bio }}</p>
+                {% endif %}
+
+                <div class="d-grid gap-2">
+                    {% if friendship %}
+                        <form method="POST" action="{{ url_for('remove_friend') }}"
+                              onsubmit="return confirm('Удалить из друзей?');">
+                            <input type="hidden" name="friend_id" value="{{ user.id }}">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-person-dash me-2"></i>Удалить из друзей
+                            </button>
+                        </form>
+                    {% elif friend_request %}
+                        {% if friend_request.sender_id == current_user.id %}
+                            <button class="btn btn-outline-secondary" disabled>
+                                <i class="bi bi-clock me-2"></i>Запрос отправлен
+                            </button>
+                        {% else %}
+                            <div class="btn-group w-100">
+                                <form method="POST" action="{{ url_for('respond_friend_request') }}" class="w-50">
+                                    <input type="hidden" name="request_id" value="{{ friend_request.id }}">
+                                    <button type="submit" name="action" value="accept" class="btn btn-success w-100">
+                                        <i class="bi bi-check me-1"></i>Принять
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ url_for('respond_friend_request') }}" class="w-50">
+                                    <input type="hidden" name="request_id" value="{{ friend_request.id }}">
+                                    <button type="submit" name="action" value="reject" class="btn btn-danger w-100">
+                                        <i class="bi bi-x me-1"></i>Отклонить
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <form method="POST" action="{{ url_for('add_friend') }}">
+                            <input type="hidden" name="friend_id" value="{{ user.id }}">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus me-2"></i>Добавить в друзья
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Информация -->
+        <div class="card profile-card">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Информация</h6>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
+                        <span>Дата регистрации</span>
+                        <span class="text-muted">{{ user.created_at.strftime('%d.%m.%Y') }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
+                        <span>Друзей</span>
+                        <span class="badge bg-primary rounded-pill">{{ friends|length }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
+                        <span>Вишлистов</span>
+                        <span class="badge bg-info rounded-pill">{{ accessible_wishlists|length }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <!-- Статистика -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 opacity-75">Вишлистов</h6>
+                                <h3 class="card-title mb-0">{{ accessible_wishlists|length }}</h3>
+                            </div>
+                            <i class="bi bi-gift fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 opacity-75">Друзей</h6>
+                                <h3 class="card-title mb-0">{{ friends|length }}</h3>
+                            </div>
+                            <i class="bi bi-people fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Доступные вишлисты -->
+        <div class="card profile-card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-gift me-2"></i>Доступные вишлисты
+                    </h5>
+                    <span class="badge bg-primary">{{ accessible_wishlists|length }}</span>
+                </div>
+
+                {% if accessible_wishlists %}
+                <div class="row g-3">
+                    {% for wishlist in accessible_wishlists %}
+                    <div class="col-md-6">
+                        <div class="card wishlist-item border">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start mb-2">
+                                    <div class="me-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 40px; height: 40px; background: {{ wishlist.color }};">
+                                            <i class="bi {{ wishlist.icon }} text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="card-title mb-1">{{ wishlist.title|truncate(25) }}</h6>
+                                        <div class="d-flex align-items-center mb-1">
+                                            <small class="text-muted">
+                                                <i class="bi bi-box me-1"></i>{{ wishlist.items|length }} предметов
+                                            </small>
+                                            <span class="badge wishlist-badge ms-2 {% if wishlist.is_public %}bg-success{% else %}bg-warning{% endif %}">
+                                                {% if wishlist.is_public %}Публичный{% else %}Приватный{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        {% if wishlist.owner.id == user.id %}
+                                            <i class="bi bi-person me-1"></i>Владелец
+                                        {% else %}
+                                            <i class="bi bi-share me-1"></i>Расшарено
+                                        {% endif %}
+                                    </small>
+                                    <a href="{{ url_for('view_wishlist', id=wishlist.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Открыть
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-gift fs-1 text-muted mb-3"></i>
+                    <p class="text-muted mb-0">Нет доступных вишлистов</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Друзья пользователя -->
+        <div class="card profile-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-people me-2"></i>Друзья пользователя
+                    </h5>
+                    <span class="badge bg-primary">{{ friends|length }}</span>
+                </div>
+
+                {% if friends %}
+                <div class="row g-3">
+                    {% for friend in friends %}
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center justify-content-between p-3 friend-card">
+                            <a href="{{ url_for('view_user_profile', id=friend.id) }}"
+                               class="text-decoration-none d-flex align-items-center flex-grow-1">
+                                <div class="friend-avatar me-3">
+                                    {% if friend.avatar and friend.avatar != 'default.png' %}
+                                    <img src="{{ url_for('uploaded_file', filename=friend.avatar) }}"
+                                         class="avatar">
+                                    {% else %}
+                                    <div class="avatar avatar-placeholder">
+                                        {{ friend.username[0]|upper }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="friend-info">
+                                    <h6 class="mb-0">{{ friend.username|truncate(15) }}</h6>
+                                    <small class="text-muted">{{ friend.email|truncate(20) }}</small>
+                                </div>
+                            </a>
+                            <div class="friend-actions">
+                                <a href="{{ url_for('view_user_profile', id=friend.id) }}"
+                                   class="btn btn-sm btn-outline-primary btn-profile">
+                                    <i class="bi bi-person me-1"></i>Профиль
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-people fs-1 text-muted mb-3"></i>
+                    <p class="text-muted mb-0">У пользователя пока нет друзей</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
