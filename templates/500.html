@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка сервера - WishLister{% endblock %}
+
+{% block styles %}
+<style>
+.error-page {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.error-animation {
+    max-width: 400px;
+    margin: 0 auto 40px;
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 20px;
+}
+
+.error-message h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: var(--dark);
+}
+
+.error-message p {
+    font-size: 1.1rem;
+    color: var(--gray);
+    margin-bottom: 30px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.error-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.error-illustration {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    margin: 0 auto 40px;
+}
+
+.error-illustration::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(45deg, rgba(239, 68, 68, 0.1), rgba(245, 158, 11, 0.1));
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.error-illustration::after {
+    content: '500';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 120px;
+    font-weight: 800;
+    color: rgba(239, 68, 68, 0.15);
+    z-index: 2;
+}
+
+.spinner-large {
+    width: 80px;
+    height: 80px;
+    border-width: 6px;
+    margin: 0 auto 30px;
+}
+
+[data-bs-theme="dark"] .error-message h1 {
+    color: var(--dark);
+}
+
+[data-bs-theme="dark"] .error-message p {
+    color: var(--gray);
+}
+
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 6rem;
+    }
+    
+    .error-message h1 {
+        font-size: 2rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .error-illustration {
+        width: 250px;
+        height: 150px;
+    }
+    
+    .error-illustration::after {
+        font-size: 100px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="container">
+        <div class="error-animation">
+            <div class="error-illustration"></div>
+        </div>
+        
+        <div class="error-message">
+            <div class="error-code">500</div>
+            <h1>Что-то пошло не так</h1>
+            <p>На сервере произошла непредвиденная ошибка. Наша команда уже работает над исправлением проблемы.</p>
+            
+            <div class="mb-4">
+                <div class="spinner spinner-large"></div>
+                <p class="text-muted small">Пытаемся восстановить работу...</p>
+            </div>
+            
+            <div class="error-actions">
+                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-house-door me-2"></i>На главную
+                </a>
+                <button onclick="window.location.reload()" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Обновить страницу
+                </button>
+            </div>
+            
+            <div class="mt-5">
+                <p class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Если ошибка повторяется, свяжитесь с поддержкой
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -5,6 +5,15 @@
 {% block styles %}
 <style>
 /* Дополнительные стили для фиксации верстки */
+.card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
 .dropdown-menu {
     min-width: 180px;
 }
@@ -92,6 +101,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* Стили для статистики */
+.stat-card .bg-opacity-10 {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.stat-card .bg-primary { --bs-primary-rgb: 102, 126, 234; }
+.stat-card .bg-success { --bs-success-rgb: 16, 185, 129; }
+.stat-card .bg-info { --bs-info-rgb: 59, 130, 246; }
+.stat-card .bg-warning { --bs-warning-rgb: 245, 158, 11; }
 </style>
 {% endblock %}
 
@@ -124,7 +143,7 @@
 <!-- Быстрая статистика -->
 <div class="row mb-4">
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card border-custom card-hover">
+        <div class="card border-custom card-hover stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
@@ -141,7 +160,7 @@
         </div>
     </div>
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card border-custom card-hover">
+        <div class="card border-custom card-hover stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
@@ -158,7 +177,7 @@
         </div>
     </div>
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card border-custom card-hover">
+        <div class="card border-custom card-hover stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
@@ -175,7 +194,7 @@
         </div>
     </div>
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card border-custom card-hover">
+        <div class="card border-custom card-hover stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
@@ -234,7 +253,7 @@
         <div class="row g-4">
             {% for wishlist in wishlists %}
             <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="card wishlist-card border-custom">
+                <div class="card wishlist-card border-custom card-hover">
                     <div class="card-body">
                         <div class="d-flex align-items-start mb-3">
                             <div class="me-3">
@@ -320,7 +339,7 @@
             <div class="row g-4">
                 {% for wishlist in friend_wishlists %}
                 <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card wishlist-card border-custom">
+                    <div class="card wishlist-card border-custom card-hover">
                         <div class="card-body">
                             <div class="d-flex align-items-start mb-3">
                                 <div class="me-3">
@@ -335,16 +354,16 @@
                                         <a href="{{ url_for('view_user_profile', id=wishlist.user_id) }}"
                                            class="text-decoration-none">
                                             <div class="d-flex align-items-center">
-                                                {% if wishlist.owner.avatar and wishlist.owner.avatar != 'default.png' %}
+                                                {% if wishlist.owner and wishlist.owner.avatar and wishlist.owner.avatar != 'default.png' %}
                                                 <img src="{{ url_for('uploaded_file', filename=wishlist.owner.avatar) }}"
                                                      class="rounded-circle me-1" style="width: 24px; height: 24px; object-fit: cover;">
                                                 {% else %}
                                                 <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-1"
                                                      style="width: 24px; height: 24px; font-size: 12px;">
-                                                    {{ wishlist.owner.username[0]|upper }}
+                                                    {{ wishlist.owner.username[0]|upper if wishlist.owner else '?' }}
                                                 </div>
                                                 {% endif %}
-                                                <small class="text-muted">{{ wishlist.owner.username|truncate(15) }}</small>
+                                                <small class="text-muted">{{ wishlist.owner.username|truncate(15) if wishlist.owner else 'Неизвестный' }}</small>
                                             </div>
                                         </a>
                                     </div>
@@ -585,7 +604,7 @@
             <div class="row g-4">
                 {% for wishlist in friend_wishlists %}
                 <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card wishlist-card border-custom">
+                    <div class="card wishlist-card border-custom card-hover">
                         <div class="card-body">
                             <div class="d-flex align-items-start mb-3">
                                 <div class="me-3">
@@ -600,16 +619,16 @@
                                         <a href="{{ url_for('view_user_profile', id=wishlist.user_id) }}"
                                            class="text-decoration-none">
                                             <div class="d-flex align-items-center">
-                                                {% if wishlist.owner.avatar and wishlist.owner.avatar != 'default.png' %}
+                                                {% if wishlist.owner and wishlist.owner.avatar and wishlist.owner.avatar != 'default.png' %}
                                                 <img src="{{ url_for('uploaded_file', filename=wishlist.owner.avatar) }}"
                                                      class="rounded-circle me-1" style="width: 24px; height: 24px; object-fit: cover;">
                                                 {% else %}
                                                 <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-1"
                                                      style="width: 24px; height: 24px; font-size: 12px;">
-                                                    {{ wishlist.owner.username[0]|upper }}
+                                                    {{ wishlist.owner.username[0]|upper if wishlist.owner else '?' }}
                                                 </div>
                                                 {% endif %}
-                                                <small class="text-muted">{{ wishlist.owner.username|truncate(15) }}</small>
+                                                <small class="text-muted">{{ wishlist.owner.username|truncate(15) if wishlist.owner else 'Неизвестный' }}</small>
                                             </div>
                                         </a>
                                     </div>

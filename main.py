@@ -164,17 +164,27 @@ def save_avatar(file, user_id):
         if user.avatar and user.avatar != 'default.png':
             old_path = os.path.join(app.config['UPLOAD_FOLDER'], user.avatar)
             if os.path.exists(old_path):
-                os.remove(old_path)
+                try:
+                    os.remove(old_path)
+                except:
+                    pass
 
-        filename = secure_filename(f"avatar_{user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg")
+        ext = secure_filename(file.filename).rsplit('.', 1)[1].lower()
+        filename = f"avatar_{user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{ext}"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-        img = Image.open(file)
-        img = img.convert('RGB')
-        img.thumbnail(app.config['AVATAR_SIZE'], Image.Resampling.LANCZOS)
-        img.save(filepath, 'JPEG', quality=85)
+        try:
+            img = Image.open(file)
+            if img.mode in ('RGBA', 'LA', 'P'):
+                img = img.convert('RGB')
 
-        return filename
+            img.thumbnail(app.config['AVATAR_SIZE'], Image.Resampling.LANCZOS)
+            img.save(filepath, 'JPEG', quality=85)
+
+            return filename
+        except Exception as e:
+            print(f"Ошибка обработки аватара: {e}")
+            return None
     return None
 
 
@@ -376,6 +386,23 @@ def get_accessible_wishlists(user_id):
                 public_friend_wishlists.append(wishlist)
 
     return wishlists, shared_wishlists, public_friend_wishlists
+
+
+# Обработчики ошибок
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
+
+@app.errorhandler(403)
+def forbidden_error(error):
+    return render_template('403.html'), 403
 
 
 # Маршруты
@@ -717,6 +744,7 @@ def dashboard():
                            total_items=total_items,
                            purchased_items=purchased_items)
 
+
 @app.route('/wishlist/create', methods=['GET', 'POST'])
 @login_required
 def create_wishlist():
@@ -876,7 +904,7 @@ def add_wishlist_item(id):
         name=name,
         description=description,
         link=link,
-        price=price,  # Теперь это число, а не строка
+        price=price,
         priority=int(priority),
         wishlist_id=id
     )
@@ -885,6 +913,7 @@ def add_wishlist_item(id):
     db.session.commit()
     flash('Предмет добавлен!', 'success')
     return redirect(url_for('view_wishlist', id=id))
+
 
 @app.route('/wishlist/<int:id>/share', methods=['POST'])
 @login_required
@@ -1063,7 +1092,7 @@ def edit_wishlist_item(id):
         item.name = name
         item.description = description
         item.link = link
-        item.price = price  # Теперь это число
+        item.price = price
         item.priority = int(request.form.get('priority', 1))
 
         db.session.commit()
@@ -1072,6 +1101,7 @@ def edit_wishlist_item(id):
 
     return render_template('edit_item.html', item=item)
 
+
 @app.route('/toggle-dark-mode', methods=['POST'])
 def toggle_dark_mode():
     if request.is_json:
@@ -1079,6 +1109,7 @@ def toggle_dark_mode():
         session['dark_mode'] = data.get('dark_mode', False)
         return jsonify({'success': True})
     return jsonify({'success': False})
+
 
 @app.route('/user/<int:id>')
 @login_required
@@ -1367,7 +1398,20 @@ def toggle_purchased(id):
     item = WishlistItem.query.get_or_404(id)
     wishlist = Wishlist.query.get(item.wishlist_id)
 
-    if wishlist.user_id != current_user.id:
+    # Проверяем доступ
+    has_access = False
+    if wishlist.user_id == current_user.id:
+        has_access = True
+    else:
+        # Проверяем доступ через shared вишлисты
+        share_access = WishlistShare.query.filter_by(
+            wishlist_id=wishlist.id,
+            user_id=current_user.id
+        ).first()
+        if share_access:
+            has_access = True
+
+    if not has_access:
         return jsonify({'error': 'Нет доступа'}), 403
 
     item.is_purchased = not item.is_purchased
@@ -1428,7 +1472,16 @@ def check_session():
         'authenticated': current_user.is_authenticated,
         'username': current_user.username if current_user.is_authenticated else None
     })
-
+@app.route('/fix-sessions')
+def fix_sessions():
+    """Ручка для очистки невалидных сессий"""
+    session.clear()
+    response = redirect(url_for('index'))
+    response.delete_cookie('session')
+    response.delete_cookie('remember_token')
+    response.delete_cookie('WishLister_session')
+    flash('Сессии очищены', 'info')
+    return response
 
 with app.app_context():
     db.create_all()
