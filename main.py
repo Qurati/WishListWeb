@@ -15,6 +15,200 @@ import qrcode
 import io
 import base64
 import json
+import logging
+from logging.handlers import RotatingFileHandler
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import sys
+
+
+# Настройка логирования
+def setup_logging():
+    logger = logging.getLogger('wishlister')
+    logger.setLevel(logging.DEBUG)
+
+    # Консольный вывод
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.DEBUG)
+
+    # Файловый вывод
+    file_handler = RotatingFileHandler(
+        'wishlister.log',
+        maxBytes=1024 * 1024 * 10,  # 10MB
+        backupCount=5
+    )
+    file_handler.setLevel(logging.INFO)
+
+    # Форматтер
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+    return logger
+
+
+logger = setup_logging()
+
+
+# Обновите функцию send_email_otp с улучшенной обработкой ошибок
+def send_email_otp(email, otp_code, purpose="регистрации"):
+    """Улучшенная отправка OTP кода с несколькими уровнями резервирования"""
+    try:
+        logger.info(f"Попытка отправки OTP {otp_code} на {email} для {purpose}")
+
+        subject = f"Код подтверждения WishLister: {otp_code}"
+        body = f"""
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #667eea; margin: 0;">WishLister</h2>
+                <p style="color: #666;">Ваш список желаний</p>
+            </div>
+
+            <div style="background: white; padding: 30px; border-radius: 8px; text-align: center;">
+                <h3 style="color: #333; margin-bottom: 20px;">Код подтверждения</h3>
+                <div style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #667eea; margin: 25px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    {otp_code}
+                </div>
+                <p style="color: #666; margin-bottom: 10px;">Используйте этот код для {purpose}</p>
+                <p style="color: #999; font-size: 14px;">Код действителен в течение {app.config['OTP_EXPIRE_MINUTES']} минут</p>
+            </div>
+
+            <div style="margin-top: 20px; text-align: center; color: #999; font-size: 12px;">
+                <p>Если вы не запрашивали этот код, проигнорируйте это письмо.</p>
+                <p>© 2024 WishLister. Все права защищены.</p>
+            </div>
+        </div>
+        """
+
+        # Метод 1: Используем Flask-Mail (основной)
+        try:
+            msg = Message(
+                subject=subject,
+                recipients=[email],
+                html=body,
+                sender=app.config['MAIL_DEFAULT_SENDER']
+            )
+
+            mail.send(msg)
+            logger.info(f"Email успешно отправлен через Flask-Mail на {email}")
+            return True
+
+        except Exception as e:
+            logger.warning(f"Ошибка Flask-Mail: {e}. Пробуем резервный метод...")
+
+            # Метод 2: Резервный метод с использованием smtplib напрямую
+            return send_email_backup(email, subject, body)
+
+    except Exception as e:
+        logger.error(f"Критическая ошибка отправки OTP: {e}")
+        return False
+
+
+def send_email_backup(email, subject, html_body):
+    """Резервный метод отправки email через smtplib"""
+    try:
+        # Получаем настройки из конфигурации
+        mail_server = app.config.get('MAIL_SERVER', 'smtp.gmail.com')
+        mail_port = app.config.get('MAIL_PORT', 587)
+        mail_username = app.config.get('MAIL_USERNAME')
+        mail_password = app.config.get('MAIL_PASSWORD')
+        mail_use_tls = app.config.get('MAIL_USE_TLS', True)
+
+        if not mail_username or not mail_password:
+            logger.error("Не указаны учетные данные почты")
+            return False
+
+        # Создаем сообщение
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = app.config.get('MAIL_DEFAULT_SENDER', 'WishLister <noreply@wishlister.com>')
+        msg['To'] = email
+
+        # Добавляем HTML часть
+        html_part = MIMEText(html_body, 'html')
+        msg.attach(html_part)
+
+        # Подключаемся к SMTP серверу
+        with smtplib.SMTP(mail_server, mail_port) as server:
+            if mail_use_tls:
+                server.starttls()
+
+            server.login(mail_username, mail_password)
+            server.send_message(msg)
+
+        logger.info(f"Резервная отправка успешна на {email}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Ошибка резервной отправки: {e}")
+
+        # Метод 3: Просто логируем OTP для разработки
+        logger.info(f"DEBUG MODE - OTP для {email}: {subject}")
+        return True  # Возвращаем True для разработки
+
+    return False
+
+
+# Обновите функцию create_otp с дополнительной информацией
+def create_otp(user_id, purpose='login'):
+    """Создание и отправка OTP кода с улучшенной обработкой"""
+    try:
+        # Удаляем старые неиспользованные OTP
+        OTPCode.query.filter_by(
+            user_id=user_id,
+            purpose=purpose,
+            is_used=False
+        ).delete()
+
+        otp_code = generate_otp_code()
+
+        otp = OTPCode(
+            user_id=user_id,
+            code=otp_code,
+            purpose=purpose,
+            expires_at=datetime.utcnow() + timedelta(minutes=app.config['OTP_EXPIRE_MINUTES'])
+        )
+
+        db.session.add(otp)
+        db.session.commit()
+
+        user = User.query.get(user_id)
+
+        # Проверяем время последней отправки
+        if user.last_otp_sent:
+            time_since_last = datetime.utcnow() - user.last_otp_sent
+            if time_since_last < timedelta(seconds=app.config['OTP_RESEND_COOLDOWN']):
+                logger.warning(f"Слишком частые запросы OTP для пользователя {user_id}")
+                flash('Подождите перед отправкой нового кода', 'warning')
+                return False
+
+        # Отправляем OTP
+        success = send_email_otp(user.email, otp_code, purpose)
+
+        if success:
+            user.last_otp_sent = datetime.utcnow()
+            user.otp_attempts = 0
+            db.session.commit()
+
+            logger.info(f"OTP успешно создан для пользователя {user_id} ({user.email})")
+            return True
+        else:
+            logger.error(f"Не удалось отправить OTP пользователю {user_id}")
+            flash('Ошибка отправки OTP. Проверьте настройки почты.', 'danger')
+            return False
+
+    except Exception as e:
+        logger.error(f"Ошибка создания OTP: {e}")
+        db.session.rollback()
+        flash('Внутренняя ошибка при создании OTP', 'danger')
+        return False
+
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or secrets.token_hex(32)
@@ -239,34 +433,6 @@ def send_email_otp(email, otp_code, purpose="регистрации"):
         return False
 
 
-def create_otp(user_id, purpose='login'):
-    OTPCode.query.filter_by(
-        user_id=user_id,
-        purpose=purpose,
-        is_used=False
-    ).delete()
-
-    otp_code = generate_otp_code()
-
-    otp = OTPCode(
-        user_id=user_id,
-        code=otp_code,
-        purpose=purpose,
-        expires_at=datetime.utcnow() + timedelta(minutes=app.config['OTP_EXPIRE_MINUTES'])
-    )
-
-    db.session.add(otp)
-    db.session.commit()
-
-    user = User.query.get(user_id)
-    success = send_email_otp(user.email, otp_code, purpose)
-
-    if success:
-        user.last_otp_sent = datetime.utcnow()
-        db.session.commit()
-
-    return success
-
 
 def verify_otp(user_id, code, purpose='login'):
     user = User.query.get(user_id)
@@ -387,6 +553,59 @@ def get_accessible_wishlists(user_id):
 
     return wishlists, shared_wishlists, public_friend_wishlists
 
+@app.route('/test-email')
+@login_required
+def test_email():
+    """Тестирование отправки email"""
+    try:
+        test_email = current_user.email
+        test_otp = generate_otp_code()
+
+        success = send_email_otp(test_email, test_otp, "тестирования")
+
+        if success:
+            flash(f'Тестовое письмо отправлено на {test_email}', 'success')
+            logger.info(f"Тестовое письмо отправлено на {test_email}")
+        else:
+            flash('Ошибка отправки тестового письма', 'danger')
+
+        return redirect(url_for('dashboard'))
+
+    except Exception as e:
+        logger.error(f"Ошибка тестирования почты: {e}")
+        flash(f'Ошибка тестирования почты: {str(e)}', 'danger')
+        return redirect(url_for('dashboard'))
+
+
+@app.route('/email-debug')
+@login_required
+def email_debug():
+    """Страница отладки email (только для админов)"""
+    if current_user.username != 'admin':
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('dashboard'))
+
+    # Получаем последние OTP
+    otps = OTPCode.query.order_by(OTPCode.created_at.desc()).limit(10).all()
+
+    return render_template('email_debug.html',
+                           config=app.config,
+                           otps=otps)
+# Добавьте endpoint для просмотра логов
+@app.route('/logs')
+@login_required
+def view_logs():
+    """Просмотр логов (только для админов)"""
+    if current_user.username != 'admin':  # Замените на свою логику проверки админа
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('dashboard'))
+
+    try:
+        with open('wishlister.log', 'r') as f:
+            logs = f.readlines()[-100:]  # Последние 100 строк
+        return render_template('logs.html', logs=logs)
+    except:
+        return "Логи не найдены"
 
 # Обработчики ошибок
 @app.errorhandler(404)

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Debug</title>
+</head>
+<body>
+    <h1>Отладка Email отправки</h1>
+
+    <form method="POST" action="/test-email">
+        <button type="submit">Отправить тестовый email</button>
+    </form>
+
+    <h2>Конфигурация почты:</h2>
+    <ul>
+        <li>MAIL_SERVER: {{ config.MAIL_SERVER }}</li>
+        <li>MAIL_PORT: {{ config.MAIL_PORT }}</li>
+        <li>MAIL_USERNAME: {{ config.MAIL_USERNAME[:3] }}...</li>
+        <li>MAIL_USE_TLS: {{ config.MAIL_USE_TLS }}</li>
+    </ul>
+
+    <h2>Последние OTP:</h2>
+    <table border="1">
+        <tr>
+            <th>Email</th>
+            <th>OTP</th>
+            <th>Цель</th>
+            <th>Создан</th>
+            <th>Использован</th>
+        </tr>
+        {% for otp in otps %}
+        <tr>
+            <td>{{ otp.user.email if otp.user else 'N/A' }}</td>
+            <td>{{ otp.code }}</td>
+            <td>{{ otp.purpose }}</td>
+            <td>{{ otp.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ 'Да' if otp.is_used else 'Нет' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
