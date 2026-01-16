@@ -1,0 +1,135 @@
+2026-01-16 17:20:24,495 - __main__ - INFO - Email worker запущен
+2026-01-16 17:20:24,673 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-16 17:20:24,673 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-16 17:20:24,675 - werkzeug - INFO -  * Restarting with stat
+2026-01-16 17:20:25,717 - __main__ - INFO - Email worker запущен
+2026-01-16 17:20:25,742 - werkzeug - WARNING -  * Debugger is active!
+2026-01-16 17:20:25,747 - werkzeug - INFO -  * Debugger PIN: 945-044-335
+2026-01-16 17:21:35,098 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:21:35] "GET / HTTP/1.1" 200 -
+2026-01-16 17:21:38,264 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:21:38] "GET /register HTTP/1.1" 200 -
+2026-01-16 17:21:47,406 - __main__ - INFO - Email задача добавлена в очередь для s110919858@gmail.com
+2026-01-16 17:21:47,406 - __main__ - INFO - Отправка OTP 012129 на s110919858@gmail.com
+2026-01-16 17:21:47,408 - __main__ - INFO - Попытка подключения к Gmail через порт 587
+2026-01-16 17:21:47,426 - __main__ - INFO - OTP создан для пользователя 1
+2026-01-16 17:21:47,430 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:21:47] "[32mPOST /register HTTP/1.1[0m" 302 -
+2026-01-16 17:21:47,444 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:21:47] "GET /verify-registration HTTP/1.1" 200 -
+2026-01-16 17:21:48,970 - __main__ - INFO - Email успешно отправлен через порт 587
+2026-01-16 17:21:56,443 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:21:56] "[32mPOST /verify-registration HTTP/1.1[0m" 302 -
+2026-01-16 17:21:56,557 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:21:56] "GET /dashboard HTTP/1.1" 200 -
+2026-01-16 17:21:59,992 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:21:59] "[32mGET /logout HTTP/1.1[0m" 302 -
+2026-01-16 17:21:59,998 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:21:59] "GET / HTTP/1.1" 200 -
+2026-01-16 17:22:11,863 - __main__ - INFO - Email worker запущен
+2026-01-16 17:22:11,886 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-16 17:22:11,886 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-16 17:22:17,091 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:22:17] "GET / HTTP/1.1" 200 -
+2026-01-16 17:22:19,002 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:22:19] "GET /register HTTP/1.1" 200 -
+2026-01-16 17:22:32,317 - __main__ - INFO - Email worker запущен
+2026-01-16 17:22:32,475 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-16 17:22:32,475 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-16 17:22:37,854 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:22:37] "GET /register HTTP/1.1" 200 -
+2026-01-16 17:22:44,602 - __main__ - INFO - Email задача добавлена в очередь для s110919858@gmail.com
+2026-01-16 17:22:44,602 - __main__ - INFO - Отправка OTP 870972 на s110919858@gmail.com
+2026-01-16 17:22:44,605 - __main__ - INFO - Попытка подключения к Gmail через порт 587
+2026-01-16 17:22:44,623 - __main__ - INFO - OTP создан для пользователя 1
+2026-01-16 17:22:44,627 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:22:44] "[32mPOST /register HTTP/1.1[0m" 302 -
+2026-01-16 17:22:44,638 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:22:44] "GET /verify-registration HTTP/1.1" 200 -
+2026-01-16 17:22:44,875 - __main__ - WARNING - Порт 587 не сработал: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://suppor
+2026-01-16 17:22:44,875 - __main__ - INFO - Попытка подключения к Gmail через порт 465
+2026-01-16 17:22:54,920 - __main__ - WARNING - Порт 465 не сработал: Connection unexpectedly closed: timed out
+2026-01-16 17:22:54,920 - __main__ - INFO - Попытка подключения к Gmail через порт 25
+2026-01-16 17:23:04,924 - __main__ - WARNING - Порт 25 не сработал: timed out
+2026-01-16 17:23:04,924 - __main__ - ERROR - Все попытки отправки email не удались
+2026-01-16 17:23:04,924 - __main__ - INFO - DEBUG MODE - OTP для s110919858@gmail.com: 870972
+2026-01-16 17:23:54,710 - __main__ - INFO - Email задача добавлена в очередь для s110919858@gmail.com
+2026-01-16 17:23:54,710 - __main__ - INFO - Отправка OTP 498327 на s110919858@gmail.com
+2026-01-16 17:23:54,711 - __main__ - INFO - Попытка подключения к Gmail через порт 587
+2026-01-16 17:23:54,727 - __main__ - INFO - OTP создан для пользователя 1
+2026-01-16 17:23:54,730 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:23:54] "[32mGET /resend-otp/registration HTTP/1.1[0m" 302 -
+2026-01-16 17:23:54,737 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:23:54] "GET /verify-registration HTTP/1.1" 200 -
+2026-01-16 17:23:54,984 - __main__ - WARNING - Порт 587 не сработал: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://suppor
+2026-01-16 17:23:54,984 - __main__ - INFO - Попытка подключения к Gmail через порт 465
+2026-01-16 17:24:05,024 - __main__ - WARNING - Порт 465 не сработал: Connection unexpectedly closed: timed out
+2026-01-16 17:24:05,024 - __main__ - INFO - Попытка подключения к Gmail через порт 25
+2026-01-16 17:24:15,036 - __main__ - WARNING - Порт 25 не сработал: timed out
+2026-01-16 17:24:15,036 - __main__ - ERROR - Все попытки отправки email не удались
+2026-01-16 17:24:15,036 - __main__ - INFO - DEBUG MODE - OTP для s110919858@gmail.com: 498327
+2026-01-16 17:24:31,947 - __main__ - INFO - Email worker запущен
+2026-01-16 17:24:31,969 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-16 17:24:31,969 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-16 17:24:35,316 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:24:35] "GET / HTTP/1.1" 200 -
+2026-01-16 17:24:37,801 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:24:37] "GET /register HTTP/1.1" 200 -
+2026-01-16 17:24:43,376 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:24:43] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-01-16 17:24:54,273 - __main__ - INFO - Email задача добавлена в очередь для sasha.solev.legenda@gmail.com
+2026-01-16 17:24:54,273 - __main__ - INFO - Отправка OTP 970014 на sasha.solev.legenda@gmail.com
+2026-01-16 17:24:54,275 - __main__ - INFO - Попытка подключения к Gmail через порт 587
+2026-01-16 17:24:54,297 - __main__ - INFO - OTP создан для пользователя 2
+2026-01-16 17:24:54,301 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:24:54] "[32mPOST /register HTTP/1.1[0m" 302 -
+2026-01-16 17:24:54,312 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:24:54] "GET /verify-registration HTTP/1.1" 200 -
+2026-01-16 17:24:54,607 - __main__ - WARNING - Порт 587 не сработал: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://suppor
+2026-01-16 17:24:54,607 - __main__ - INFO - Попытка подключения к Gmail через порт 465
+2026-01-16 17:25:04,661 - __main__ - WARNING - Порт 465 не сработал: Connection unexpectedly closed
+2026-01-16 17:25:04,661 - __main__ - INFO - Попытка подключения к Gmail через порт 25
+2026-01-16 17:25:14,666 - __main__ - WARNING - Порт 25 не сработал: timed out
+2026-01-16 17:25:14,666 - __main__ - ERROR - Все попытки отправки email не удались
+2026-01-16 17:25:14,667 - __main__ - INFO - DEBUG MODE - OTP для sasha.solev.legenda@gmail.com: 970014
+2026-01-16 17:28:14,642 - __main__ - INFO - Email worker запущен
+2026-01-16 17:28:14,664 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-16 17:28:14,664 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-16 17:28:16,022 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:28:16] "GET / HTTP/1.1" 200 -
+2026-01-16 17:28:19,323 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:28:19] "GET /test-email-config HTTP/1.1" 200 -
+2026-01-16 17:29:31,926 - __main__ - INFO - Email worker запущен
+2026-01-16 17:29:31,957 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-16 17:29:31,958 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-16 17:29:34,012 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:29:34] "GET / HTTP/1.1" 200 -
+2026-01-16 17:29:36,112 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:29:36] "GET /test-email-config HTTP/1.1" 200 -
+2026-01-16 17:29:38,411 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:29:38] "GET /register HTTP/1.1" 200 -
+2026-01-16 17:29:47,143 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:29:47] "[32mPOST /register HTTP/1.1[0m" 302 -
+2026-01-16 17:29:47,149 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:29:47] "GET /register HTTP/1.1" 200 -
+2026-01-16 17:30:03,435 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:30:03] "[32mPOST /register HTTP/1.1[0m" 302 -
+2026-01-16 17:30:03,442 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:30:03] "GET /register HTTP/1.1" 200 -
+2026-01-16 17:30:16,029 - __main__ - INFO - Email worker запущен
+2026-01-16 17:30:16,198 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-16 17:30:16,198 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-16 17:30:21,404 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:30:21] "GET / HTTP/1.1" 200 -
+2026-01-16 17:30:23,488 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:30:23] "GET /register HTTP/1.1" 200 -
+2026-01-16 17:30:24,097 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:30:24] "POST /toggle-dark-mode HTTP/1.1" 200 -
+2026-01-16 17:30:33,141 - __main__ - INFO - Email задача добавлена в очередь для s110919858@gmail.com
+2026-01-16 17:30:33,141 - __main__ - INFO - Отправка OTP 728368 на s110919858@gmail.com
+2026-01-16 17:30:33,143 - __main__ - INFO - Попытка подключения к Gmail через порт 587
+2026-01-16 17:30:33,161 - __main__ - INFO - OTP создан для пользователя 1
+2026-01-16 17:30:33,165 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:30:33] "[32mPOST /register HTTP/1.1[0m" 302 -
+2026-01-16 17:30:33,178 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:30:33] "GET /verify-registration HTTP/1.1" 200 -
+2026-01-16 17:30:34,083 - __main__ - WARNING - Порт 587 не сработал: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://suppor
+2026-01-16 17:30:34,084 - __main__ - INFO - Попытка подключения к Gmail через порт 465
+2026-01-16 17:30:44,125 - __main__ - WARNING - Порт 465 не сработал: Connection unexpectedly closed: timed out
+2026-01-16 17:30:44,126 - __main__ - INFO - Попытка подключения к Gmail через порт 25
+2026-01-16 17:30:54,129 - __main__ - WARNING - Порт 25 не сработал: timed out
+2026-01-16 17:30:54,130 - __main__ - ERROR - Все попытки отправки email не удались
+2026-01-16 17:30:54,130 - __main__ - INFO - DEBUG MODE - OTP для s110919858@gmail.com: 728368
+2026-01-16 17:31:32,770 - __main__ - INFO - Email worker запущен
+2026-01-16 17:31:32,791 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-16 17:31:32,792 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-16 17:31:47,512 - __main__ - INFO - Email задача добавлена в очередь для sasha.solev.legenda@gmail.com
+2026-01-16 17:31:47,512 - __main__ - INFO - Отправка OTP 262596 на sasha.solev.legenda@gmail.com
+2026-01-16 17:31:47,514 - __main__ - INFO - Попытка подключения к Gmail через порт 587
+2026-01-16 17:31:47,540 - __main__ - INFO - OTP создан для пользователя 2
+2026-01-16 17:31:47,545 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:31:47] "[32mPOST /register HTTP/1.1[0m" 302 -
+2026-01-16 17:31:47,588 - werkzeug - INFO - 127.0.0.1 - - [16/Jan/2026 17:31:47] "GET /verify-registration HTTP/1.1" 200 -
+2026-01-16 17:31:48,419 - __main__ - WARNING - Порт 587 не сработал: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://suppor
+2026-01-16 17:31:48,419 - __main__ - INFO - Попытка подключения к Gmail через порт 465
+2026-01-16 17:31:58,455 - __main__ - WARNING - Порт 465 не сработал: Connection unexpectedly closed: timed out
+2026-01-16 17:31:58,456 - __main__ - INFO - Попытка подключения к Gmail через порт 25
+2026-01-16 17:32:08,463 - __main__ - WARNING - Порт 25 не сработал: timed out
+2026-01-16 17:32:08,464 - __main__ - ERROR - Все попытки отправки email не удались
+2026-01-16 17:32:08,464 - __main__ - INFO - DEBUG MODE - OTP для sasha.solev.legenda@gmail.com: 262596
+2026-01-16 17:40:02,165 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-16 17:40:02,165 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
